@@ -56,7 +56,10 @@ sudo apt install golang build-essential pkg-config libgtk-3-dev libwebkit2gtk-4.
 
 ## Hinweise je System
 
-- **macOS:** Die App ist nicht notariell beglaubigt. Beim ersten Start: Rechtsklick auf die App > Öffnen.
+- **macOS:** Die App ist nur ad hoc signiert, also weder mit einer Apple-Developer-ID signiert noch von Apple
+  notarisiert. Deshalb blockiert macOS sie beim ersten Start. Freigeben unter
+  *Systemeinstellungen > Datenschutz & Sicherheit > Dennoch öffnen* (ab macOS 15 reicht Rechtsklick > Öffnen nicht mehr).
+  Alternativ im Terminal: `xattr -dr com.apple.quarantine "/Applications/Serial Monitor.app"`
 - **Windows:** Braucht die WebView2-Laufzeit (unter Windows 10 und 11 vorinstalliert).
   Die Treiber des Boards müssen installiert sein (z. B. CH340, CP210x).
 - **Linux:** Braucht `libwebkit2gtk-4.1` und Zugriff auf die Schnittstelle:

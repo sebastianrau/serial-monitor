@@ -1,0 +1,182 @@
+'use strict';
+// Übersetzungen. Neue Sprache: weiteren Block hinzufügen und in index.html (#lang) eintragen.
+const I18N = {
+  de: {
+    unsupported: 'Dieser Browser unterstützt die Web Serial API nicht. Bitte in <b>Google Chrome</b> oder <b>Microsoft Edge</b> öffnen.',
+    connect: 'Verbinden',
+    disconnect: 'Trennen',
+    portSelTitle: 'Serieller Port',
+    refreshTitle: 'Portliste aktualisieren',
+    addPort: 'Port wählen…',
+    addPortTitle: 'Neuen Port auswählen',
+    autoConnect: 'Auto-Verbinden',
+    autoConnectTitle: 'Automatisch mit dem zuletzt genutzten Port verbinden, sobald er verfügbar ist',
+    statusDisconnected: 'Getrennt',
+    baud: 'Baud',
+    baudCustom: 'Eigener Wert…',
+    autoscroll: 'Autoscroll',
+    timestamp: 'Zeitstempel',
+    hexView: 'Hex-Ansicht',
+    wrap: 'Umbruch',
+    clear: 'Löschen',
+    clearTitle: 'Ausgabe löschen (Cmd/Ctrl+K)',
+    save: 'Speichern',
+    saveTitle: 'Ausgabe als .txt speichern',
+    settings: 'Einstellungen',
+    secConnection: 'Verbindung',
+    secDisplay: 'Anzeige',
+    secSend: 'Senden',
+    dataBits: 'Datenbits',
+    parity: 'Parität',
+    parityNone: 'Keine',
+    parityEven: 'Gerade',
+    parityOdd: 'Ungerade',
+    stopBits: 'Stoppbits',
+    flow: 'Flusskontrolle',
+    flowNone: 'Keine',
+    flowHw: 'Hardware (RTS/CTS)',
+    buffer: 'Puffer',
+    maxLines: 'Max. Zeilen',
+    reset: 'Board-Reset',
+    resetTitle: 'Board neu starten (ESP32/ESP8266 über RTS, Arduino über DTR)',
+    language: 'Sprache',
+    langAuto: 'Automatisch',
+    inputPlaceholder: 'Nachricht eingeben (Enter = Senden, ↑/↓ = Verlauf)',
+    send: 'Senden',
+    lineEnd: 'Zeilenende',
+    leNone: 'Kein Zeilenende',
+    leLF: 'Neue Zeile (LF)',
+    leCR: 'Zeilenumbruch (CR)',
+    leBoth: 'Beides (CR+LF)',
+    echo: 'Gesendetes anzeigen',
+    hexSend: 'Als Hex senden',
+    hexSendHint: '(z. B. 41 42 0D)',
+    clearOnSend: 'Eingabe nach Senden leeren',
+
+    invalidBaud: 'Ungültige Baudrate: {v}',
+    autoPaused: ' – Auto-Verbinden pausiert, bis das Gerät neu eingesteckt oder manuell verbunden wird',
+    connected: 'Verbunden{port} ({cfg})',
+    connectedAuto: 'Automatisch verbunden{port} ({cfg})',
+    withPort: ' mit {name}',
+    disconnected: 'Getrennt',
+    noPortFound: 'Kein Port gefunden',
+    noPortGranted: 'Kein Port freigegeben',
+    noPortSelected: 'Kein Port ausgewählt',
+    openFailedPort: 'Öffnen von {name} fehlgeschlagen: {err}',
+    openFailed: 'Öffnen fehlgeschlagen: {err}',
+    deviceRemoved: 'Gerät wurde getrennt',
+    readError: 'Lesefehler: {err}',
+    notConnected: 'Nicht verbunden',
+    inputError: 'Eingabefehler: {err}',
+    oddHex: 'Ungerade Anzahl Hex-Ziffern',
+    sendError: 'Sendefehler: {err}',
+    resetting: 'Board-Reset…',
+    resetFailed: 'Reset fehlgeschlagen: {err}',
+    saved: 'Gespeichert: {path}',
+    saveFailed: 'Speichern fehlgeschlagen: {err}',
+  },
+  en: {
+    unsupported: 'This browser does not support the Web Serial API. Please open it in <b>Google Chrome</b> or <b>Microsoft Edge</b>.',
+    connect: 'Connect',
+    disconnect: 'Disconnect',
+    portSelTitle: 'Serial port',
+    refreshTitle: 'Refresh port list',
+    addPort: 'Select port…',
+    addPortTitle: 'Select a new port',
+    autoConnect: 'Auto-connect',
+    autoConnectTitle: 'Automatically connect to the last used port as soon as it is available',
+    statusDisconnected: 'Disconnected',
+    baud: 'Baud',
+    baudCustom: 'Custom…',
+    autoscroll: 'Autoscroll',
+    timestamp: 'Timestamp',
+    hexView: 'Hex view',
+    wrap: 'Line wrap',
+    clear: 'Clear',
+    clearTitle: 'Clear output (Cmd/Ctrl+K)',
+    save: 'Save',
+    saveTitle: 'Save output as .txt',
+    settings: 'Settings',
+    secConnection: 'Connection',
+    secDisplay: 'Display',
+    secSend: 'Sending',
+    dataBits: 'Data bits',
+    parity: 'Parity',
+    parityNone: 'None',
+    parityEven: 'Even',
+    parityOdd: 'Odd',
+    stopBits: 'Stop bits',
+    flow: 'Flow control',
+    flowNone: 'None',
+    flowHw: 'Hardware (RTS/CTS)',
+    buffer: 'Buffer',
+    maxLines: 'Max. lines',
+    reset: 'Reset board',
+    resetTitle: 'Restart the board (ESP32/ESP8266 via RTS, Arduino via DTR)',
+    language: 'Language',
+    langAuto: 'Automatic',
+    inputPlaceholder: 'Enter message (Enter = send, ↑/↓ = history)',
+    send: 'Send',
+    lineEnd: 'Line ending',
+    leNone: 'No line ending',
+    leLF: 'New line (LF)',
+    leCR: 'Carriage return (CR)',
+    leBoth: 'Both (CR+LF)',
+    echo: 'Show sent data',
+    hexSend: 'Send as hex',
+    hexSendHint: '(e.g. 41 42 0D)',
+    clearOnSend: 'Clear input after sending',
+
+    invalidBaud: 'Invalid baud rate: {v}',
+    autoPaused: ' – auto-connect paused until the device is reconnected or you connect manually',
+    connected: 'Connected{port} ({cfg})',
+    connectedAuto: 'Auto-connected{port} ({cfg})',
+    withPort: ' to {name}',
+    disconnected: 'Disconnected',
+    noPortFound: 'No port found',
+    noPortGranted: 'No port authorized',
+    noPortSelected: 'No port selected',
+    openFailedPort: 'Failed to open {name}: {err}',
+    openFailed: 'Failed to open port: {err}',
+    deviceRemoved: 'Device disconnected',
+    readError: 'Read error: {err}',
+    notConnected: 'Not connected',
+    inputError: 'Input error: {err}',
+    oddHex: 'Odd number of hex digits',
+    sendError: 'Send error: {err}',
+    resetting: 'Resetting board…',
+    resetFailed: 'Reset failed: {err}',
+    saved: 'Saved: {path}',
+    saveFailed: 'Save failed: {err}',
+  },
+};
+
+let LANG = 'en';
+
+function resolveLang(pref) {
+  if (pref && I18N[pref]) return pref;
+  const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+  for (const l of langs) {
+    const code = String(l).slice(0, 2).toLowerCase();
+    if (I18N[code]) return code;
+  }
+  return 'en';
+}
+
+// t('key', { name: 'COM3' }) -> übersetzter Text mit ersetzten Platzhaltern
+function t(key, vars) {
+  let s = (I18N[LANG] && I18N[LANG][key]) ?? I18N.en[key] ?? key;
+  if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
+  return s;
+}
+
+// Statische Texte: data-i18n (Text), data-i18n-html, data-i18n-title, data-i18n-placeholder
+function applyI18n(lang) {
+  LANG = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  // Tooltips als data-tip (eigene Anzeige in app.js), nicht als title – der wird in der App nicht zuverlässig angezeigt
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.dataset.tip = t(el.dataset.i18nTitle); el.removeAttribute('title'); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+}

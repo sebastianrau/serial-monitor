@@ -1,0 +1,93 @@
+name: Release
+
+# Release erstellen:  git tag v1.2.0 && git push origin v1.2.0
+# Manuell starten (Actions > Release > Run workflow) baut alles als Test, ohne Release.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # Tag v1.2.0 -> Version 1.2.0 (build.sh entfernt das "v"); ohne Tag: Testversion
+  VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '0.0.0-dev' }}
+
+jobs:
+  macos:
+    name: macOS (Universal)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: ./build.sh mac
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/*.dmg
+          if-no-files-found: error
+
+  windows:
+    name: Windows (x64 + arm64)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: ./build.sh windows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*.exe
+          if-no-files-found: error
+
+  linux:
+    name: Linux (${{ matrix.arch }})
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Install GTK/WebKitGTK
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential pkg-config libgtk-3-dev libwebkit2gtk-4.1-dev
+      - run: ./build.sh linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.arch }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  release:
+    name: GitHub Release
+    if: github.ref_type == 'tag'
+    needs: [macos, windows, linux]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums
+        run: cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=()
+          [[ "$GITHUB_REF_NAME" == *-* ]] && flags+=(--prerelease)   # z. B. v1.2.0-beta.1
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Serial Monitor $GITHUB_REF_NAME" \
+            --generate-notes "${flags[@]}"

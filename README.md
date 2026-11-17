@@ -50,6 +50,9 @@ Fertige Pakete gibt es unter **Releases**:
 | Windows | `SerialMonitor-<version>-windows-x64.exe` bzw. `-arm64.exe` (ohne Installation) |
 | Linux   | `SerialMonitor-<version>-linux-amd64.tar.gz` bzw. `-arm64.tar.gz` |
 
+Zu jedem Release gehören außerdem `THIRD_PARTY_LICENSES.txt` (Lizenzen der verwendeten Bibliotheken),
+eine SBOM pro Betriebssystem im CycloneDX-Format (`*.sbom.cdx.json`) und `SHA256SUMS.txt`.
+
 ## Release erstellen
 
 Ein Release entsteht automatisch, wenn ein Tag `v*` gepusht wird:
@@ -109,7 +112,14 @@ sudo apt install golang build-essential pkg-config libgtk-3-dev libwebkit2gtk-4.
 - `frontend/i18n.js`: alle Texte auf Deutsch und Englisch. Weitere Sprache: Block ergänzen und in
   `index.html` (`#lang`) eintragen. Die wenigen Texte aus Go stehen in `app.go` (`messages`).
 - `build.sh`: Build-Skript
+- `scripts/licenses.sh`: sammelt die Lizenztexte aller einkompilierten Bibliotheken
 - `.github/workflows/release.yml`: Release-Workflow
 
 Bekannte Einschränkung: Hardware-Flusskontrolle (RTS/CTS) wird von der Go-Bibliothek nicht unterstützt
 und ist in der App ausgeblendet.
+
+## Lizenz
+
+[MIT](LICENSE) – frei nutzbar, auch kommerziell.
+Die verwendeten Bibliotheken stehen unter MIT-, BSD- und Apache-2.0-Lizenzen; ihre Lizenztexte erzeugt
+`scripts/licenses.sh` als `THIRD_PARTY_LICENSES.txt`, die jedem Paket beiliegt.

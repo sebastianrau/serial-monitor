@@ -15,6 +15,12 @@ TAGS="desktop,production"
 LDFLAGS="-s -w"
 mkdir -p dist
 
+# Lizenzen: eigene (LICENSE) und die der einkompilierten Bibliotheken
+notices() {
+  [ -f dist/THIRD_PARTY_LICENSES.txt ] || ./scripts/licenses.sh
+  cp LICENSE dist/LICENSE.txt
+}
+
 build_mac() {
   local min="13.0"   # Mindestversion von Go 1.27
   export CGO_ENABLED=1
@@ -53,6 +59,8 @@ PLIST
   rm -f "$dmg"
   local stage; stage="$(mktemp -d)"
   cp -R "$app" "$stage/"
+  notices
+  cp dist/LICENSE.txt dist/THIRD_PARTY_LICENSES.txt "$stage/"
   ln -s /Applications "$stage/Applications"
   hdiutil create -quiet -volname "$NAME" -srcfolder "$stage" -ov -format UDZO "$dmg"
   rm -rf "$stage"
@@ -61,6 +69,7 @@ PLIST
 }
 
 build_windows() {
+  notices   # Windows-Programme sind Einzeldateien: Lizenzen liegen als eigene Dateien daneben
   for arch in amd64 arm64; do
     local label=arm64
     [ "$arch" = amd64 ] && label=x64
@@ -79,7 +88,8 @@ build_linux() {
   echo ">> Linux $arch"
   CGO_ENABLED=1 go build -tags "$tags" -ldflags "$LDFLAGS" -o "dist/serialmonitor" .
   local tgz="dist/SerialMonitor-$VERSION-linux-$arch.tar.gz"
-  tar -czf "$tgz" -C dist serialmonitor   # tar erhält das Ausführungsrecht
+  notices
+  tar -czf "$tgz" -C dist serialmonitor LICENSE.txt THIRD_PARTY_LICENSES.txt   # tar erhält das Ausführungsrecht
   rm -f dist/serialmonitor
   echo "   -> $tgz"
 }

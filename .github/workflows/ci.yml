@@ -37,8 +37,8 @@ jobs:
           git diff --exit-code go.mod go.sum || { echo "::error::go.mod/go.sum not tidy – run 'go mod tidy'"; exit 1; }
       - name: go vet
         run: go vet -tags desktop,production,webkit2_41 ./...
-      - name: go test
-        run: go test -tags desktop,production,webkit2_41 ./...
+      - name: go test (race detector)
+        run: go test -race -tags desktop,production,webkit2_41 ./...
       - name: JavaScript syntax
         run: for f in frontend/*.js; do node --check "$f"; done
       - name: Translations complete (de/en)

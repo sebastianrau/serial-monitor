@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	wruntime "github.com/wailsapp/wails/v2/pkg/runtime"
@@ -22,7 +23,7 @@ type App struct {
 	ctx  context.Context
 	mu   sync.Mutex
 	port serial.Port
-	lang string
+	lang atomic.Value // string; set by SetLanguage, read by tr() from several goroutines (e.g. readLoop)
 }
 
 var messages = map[string]map[string]string{
@@ -44,14 +45,15 @@ var messages = map[string]map[string]string{
 
 // tr returns the message in the language chosen in the frontend (fallback: English).
 func (a *App) tr(key string) string {
-	if m, ok := messages[a.lang][key]; ok {
+	lang, _ := a.lang.Load().(string)
+	if m, ok := messages[lang][key]; ok {
 		return m
 	}
 	return messages["en"][key]
 }
 
 // SetLanguage is called by the frontend ("de" or "en").
-func (a *App) SetLanguage(lang string) { a.lang = lang }
+func (a *App) SetLanguage(lang string) { a.lang.Store(lang) }
 
 type PortInfo struct {
 	Name  string `json:"name"`

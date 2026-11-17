@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), ver
 
 ## [Unreleased]
 
+### Fixed
+
+- Data race when switching the UI language while messages are translated in the background
+
+### Changed
+
+- CI runs the Go tests with the race detector
+
 ## [0.5.1] - 2026-11-17
 
 Second test release with updated dependencies. Windows and Linux are still untested on real hardware.

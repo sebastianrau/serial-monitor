@@ -63,6 +63,16 @@ func NewApp() *App { return &App{} }
 func (a *App) startup(ctx context.Context)  { a.ctx = ctx }
 func (a *App) shutdown(ctx context.Context) { _ = a.Close() }
 
+// Version returns the app version (set at build time).
+func (a *App) Version() string { return version }
+
+// OpenURL opens a project link in the default browser (only GitHub links of this project).
+func (a *App) OpenURL(url string) {
+	if strings.HasPrefix(url, "https://github.com/sebastianrau/serial-monitor") {
+		wruntime.BrowserOpenURL(a.ctx, url)
+	}
+}
+
 // Platform returns the operating system ("darwin", "windows", "linux").
 func (a *App) Platform() string { return runtime.GOOS }
 

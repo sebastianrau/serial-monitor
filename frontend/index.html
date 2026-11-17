@@ -71,6 +71,10 @@
   .row select, .row input[type=number] { width: 150px; }
   .row .hint { color: var(--muted); font-size: 12px; }
   .inline { display: inline-flex; gap: 12px; }
+  .about { display: flex; align-items: center; gap: 12px; padding: 4px 0 2px; }
+  .about-name { font-weight: 600; }
+  .about a { color: var(--accent); text-decoration: none; font-size: 12px; }
+  .about a:hover { text-decoration: underline; }
   .inline label { display: inline-flex; align-items: center; gap: 4px; }
 
   /* Ausgabe */
@@ -97,6 +101,8 @@
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); opacity: .6; }
   .dot.on { background: var(--ok); opacity: 1; }
   #counters { font-variant-numeric: tabular-nums; }
+  .update { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .update:hover { text-decoration: underline; }
   button.icon.off { opacity: .4; cursor: default; }
   button.icon.off:hover { background: transparent; color: var(--muted); }
   #tip {
@@ -185,6 +191,17 @@
         <option value="de">Deutsch</option>
         <option value="en">English</option>
       </select></label>
+
+    <h3 data-i18n="about"></h3>
+    <div class="about">
+      <img src="appicon.png" alt="" width="44" height="44">
+      <div>
+        <div class="about-name">Serial Monitor <span id="appVersion" class="hint"></span></div>
+        <div class="hint"><span data-i18n="license"></span> · © 2026 Sebastian Rau</div>
+        <a id="repoLink" href="https://github.com/sebastianrau/serial-monitor" target="_blank" rel="noopener" data-i18n="sourceCode"></a>
+      </div>
+    </div>
+    <label class="row" id="checkUpdatesRow" data-i18n-title="checkUpdatesTip"><span data-i18n="checkUpdates"></span><input type="checkbox" id="checkUpdates" checked></label>
   </div>
 </header>
 
@@ -206,6 +223,7 @@
   <span class="dot" id="dot"></span>
   <span id="status" data-i18n="statusDisconnected"></span>
   <span class="spacer"></span>
+  <a id="updateLink" class="update" href="#" hidden></a>
   <span id="counters">RX 0 B · TX 0 B</span>
 </footer>
 

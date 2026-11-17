@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22bfc2"/>
+      <stop offset="1" stop-color="#00767a"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#172026"/>
+      <stop offset="1" stop-color="#0b1013"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000" flood-opacity=".30"/>
+    </filter>
+  </defs>
+  <!-- Grundform (macOS-Raster: 824 px mit 100 px Rand) -->
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)" filter="url(#shadow)"/>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="4"/>
+  <!-- Terminal -->
+  <rect x="180" y="215" width="664" height="594" rx="64" fill="url(#screen)"/>
+  <!-- Digitales Signal (UART-Bits) -->
+  <path d="M232 455 H300 V345 H395 V455 H462 V345 H592 V455 H659 V345 H726 V455 H792"
+        fill="none" stroke="#3ee6c9" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Prompt >_ -->
+  <path d="M250 570 L320 622 L250 674" fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="362" y="652" width="132" height="30" rx="15" fill="#ffffff"/>
+</svg>

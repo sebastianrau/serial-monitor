@@ -8,7 +8,7 @@ const api = () => window.go.main.App;
 
 // ---------- Einstellungen speichern/laden ----------
 const SETTINGS = ['baud','dataBits','parity','stopBits','flow','bufSize','maxLines','lineEnd',
-                  'autoscroll','timestamp','hexView','wrap','echo','hexSend','clearOnSend','autoConnect','lang'];
+                  'autoscroll','timestamp','hexView','wrap','echo','hexSend','clearOnSend','autoConnect','lang','checkUpdates'];
 function loadSettings() {
   let s = {};
   try { s = JSON.parse(localStorage.getItem('serialMonitorSettings') || '{}'); } catch {}
@@ -325,6 +325,11 @@ const App = {
       $('portSel').dataset.sig = '';
       refreshPorts();
     });
+    // Über: Version aus Go, Link im Standardbrowser öffnen
+    api().Version().then(v => { $('appVersion').textContent = v === 'dev' ? 'dev' : 'v' + v; }).catch(() => {});
+    $('repoLink').addEventListener('click', e => { e.preventDefault(); api().OpenURL($('repoLink').href); });
+    setTimeout(checkForUpdate, 3000);                  // kurz nach dem Start
+    setInterval(checkForUpdate, 24 * 60 * 60 * 1000);  // und einmal täglich
     // Nur im Browser verfügbar
     $('btnAddPort').style.display = 'none';
     $('flow').closest('label').style.display = 'none';
@@ -413,6 +418,9 @@ const Web = {
   },
   init() {
     $('btnRefresh').style.display = 'none';
+    $('checkUpdatesRow').style.display = 'none'; // Browser-Version hat keine Updates
+    $('appVersion').dataset.i18n = 'browserVersion';
+    $('appVersion').textContent = t('browserVersion');
     $('btnAddPort').addEventListener('click', async () => {
       try { const p = await navigator.serial.requestPort(); await this.refresh(p); } catch {}
     });
@@ -590,12 +598,40 @@ document.addEventListener('mousedown', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleSettings(false); });
 
+// ---------- Updates (nur Desktop-App) ----------
+// Fragt GitHub nach einem neueren Release; der Download läuft über den Browser.
+let availableUpdate = null; // { version, pageUrl, downloadUrl }
+function renderUpdate() {
+  const link = $('updateLink');
+  const show = !!(availableUpdate && $('checkUpdates').checked);
+  link.hidden = !show;
+  if (!show) return;
+  link.textContent = t('updateAvailable', { v: availableUpdate.version });
+  link.dataset.tip = t('updateTip');
+}
+async function checkForUpdate() {
+  if (!isApp || !$('checkUpdates').checked) return;
+  try {
+    const u = await api().CheckUpdate();
+    availableUpdate = u && u.version ? u : null;
+  } catch (e) {
+    console.warn('Update-Prüfung fehlgeschlagen:', e); // offline o. Ä. – still ignorieren
+  }
+  renderUpdate();
+}
+$('updateLink').addEventListener('click', e => {
+  e.preventDefault();
+  if (availableUpdate) api().OpenURL(availableUpdate.downloadUrl || availableUpdate.pageUrl);
+});
+$('checkUpdates').addEventListener('change', () => { renderUpdate(); checkForUpdate(); });
+
 // ---------- Sprache ----------
 function applyLanguage() {
   applyI18n(resolveLang($('lang').value === 'auto' ? null : $('lang').value));
   $('btnConnect').textContent = t(connected ? 'disconnect' : 'connect');
   if (!connected) $('status').textContent = t('statusDisconnected');
   $('portSel').dataset.sig = ''; // Portliste neu beschriften
+  renderUpdate();
   if (isApp && window.go) api().SetLanguage(LANG).catch(() => {});
 }
 $('lang').addEventListener('change', () => { applyLanguage(); refreshPorts(); });

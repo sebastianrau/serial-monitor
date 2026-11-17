@@ -1,0 +1,52 @@
+name: Bug report
+description: Something does not work as expected / Etwas funktioniert nicht wie erwartet
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! English or German is fine. / Danke für die Meldung! Deutsch oder Englisch ist beides okay.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Settings > About / Einstellungen > Über
+      placeholder: v0.5.0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Windows x64
+        - Windows arm64
+        - Linux amd64
+        - Linux arm64
+    validations:
+      required: true
+  - type: input
+    id: os-version
+    attributes:
+      label: OS version
+      placeholder: macOS 15.4 / Windows 11 24H2 / Ubuntu 24.04
+  - type: input
+    id: board
+    attributes:
+      label: Board / USB-serial adapter
+      placeholder: ESP32 DevKit (CP2102), Arduino Uno (ATmega16U2), CH340 adapter …
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Output / log
+      description: Copy from the output area or attach a saved log (Save button).
+      render: text

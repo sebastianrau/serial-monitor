@@ -12,7 +12,7 @@ NAME="Serial Monitor"
 VERSION="${VERSION:-1.0.0}"   # im CI aus dem Git-Tag
 VERSION="${VERSION#v}"        # v1.2.3 -> 1.2.3
 TAGS="desktop,production"
-LDFLAGS="-s -w"
+LDFLAGS="-s -w -X main.version=$VERSION"   # Version in der App (Über)
 mkdir -p dist
 
 # Lizenzen: eigene (LICENSE) und die der einkompilierten Bibliotheken
@@ -35,6 +35,16 @@ build_mac() {
   mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources/de.lproj" "$app/Contents/Resources/en.lproj"
   lipo -create -output "$app/Contents/MacOS/serialmonitor" dist/.mac-arm64 dist/.mac-amd64
   rm -f dist/.mac-arm64 dist/.mac-amd64
+
+  # App-Icon (.icns) aus build/appicon.png
+  local iconset; iconset="$(mktemp -d)/AppIcon.iconset"
+  mkdir -p "$iconset"
+  for s in 16 32 128 256 512; do
+    sips -z $s $s build/appicon.png --out "$iconset/icon_${s}x${s}.png" >/dev/null
+    sips -z $((s*2)) $((s*2)) build/appicon.png --out "$iconset/icon_${s}x${s}@2x.png" >/dev/null
+  done
+  iconutil -c icns "$iconset" -o "$app/Contents/Resources/AppIcon.icns"
+  rm -rf "$(dirname "$iconset")"
   cat > "$app/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -42,6 +52,7 @@ build_mac() {
   <key>CFBundleName</key><string>$NAME</string>
   <key>CFBundleDisplayName</key><string>$NAME</string>
   <key>CFBundleExecutable</key><string>serialmonitor</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundleIdentifier</key><string>io.github.sebastianrau.serialmonitor</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
@@ -70,6 +81,9 @@ PLIST
 
 build_windows() {
   notices   # Windows-Programme sind Einzeldateien: Lizenzen liegen als eigene Dateien daneben
+  # Icon, Manifest (High-DPI) und Versionsinfo als rsrc_windows_*.syso; go build bindet sie ein
+  go run ./scripts/winres -version "$VERSION" -icon build/appicon.png
+  trap 'rm -f rsrc_windows_*.syso' RETURN
   for arch in amd64 arm64; do
     local label=arm64
     [ "$arch" = amd64 ] && label=x64

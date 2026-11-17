@@ -15,8 +15,32 @@ env:
   VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '0.0.0-dev' }}
 
 jobs:
+  verify:
+    name: Verify tag
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Tag must point to a commit on main
+        if: github.ref_type == 'tag'
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME zeigt auf einen Commit, der nicht auf main liegt. Kein Release."
+            exit 1
+          fi
+          echo "OK: $GITHUB_REF_NAME liegt auf main"
+      - name: CHANGELOG entry
+        if: github.ref_type == 'tag'
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          grep -q "^## \[$v\]" CHANGELOG.md \
+            && echo "OK: CHANGELOG enthält [$v]" \
+            || echo "::warning::CHANGELOG.md hat keinen Abschnitt [$v] – Release-Notizen werden automatisch erzeugt."
+
   macos:
     name: macOS (Universal)
+    needs: verify
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +56,7 @@ jobs:
 
   windows:
     name: Windows (x64 + arm64)
+    needs: verify
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -50,6 +75,7 @@ jobs:
 
   sbom:
     name: SBOM (CycloneDX)
+    needs: verify
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -76,6 +102,7 @@ jobs:
 
   linux:
     name: Linux (${{ matrix.arch }})
+    needs: verify
     strategy:
       matrix:
         include:
@@ -104,19 +131,32 @@ jobs:
     needs: [macos, windows, linux, sbom]
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: dist
           merge-multiple: true
       - name: Checksums
         run: cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - name: Release notes from CHANGELOG
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          # Abschnitt "## [x.y.z]" bis zum nächsten "## [" bzw. den Link-Definitionen
+          awk -v v="$v" '
+            $0 ~ "^## \\[" v "\\]" { on = 1; next }
+            on && (/^## \[/ || /^\[[^]]+\]: /) { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          cat notes.md
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           flags=()
-          [[ "$GITHUB_REF_NAME" == *-* ]] && flags+=(--prerelease)   # z. B. v1.2.0-beta.1
+          # Vorabversion: Bindestrich (v1.3.0-beta.1) oder 0.x
+          if [[ "$GITHUB_REF_NAME" == *-* || "$GITHUB_REF_NAME" == v0.* ]]; then flags+=(--prerelease); fi
+          if [ -s notes.md ]; then flags+=(--notes-file notes.md); else flags+=(--generate-notes); fi
           gh release create "$GITHUB_REF_NAME" dist/* \
             --repo "$GITHUB_REPOSITORY" \
             --title "Serial Monitor $GITHUB_REF_NAME" \
-            --generate-notes "${flags[@]}"
+            "${flags[@]}"

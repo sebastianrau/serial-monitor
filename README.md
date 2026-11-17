@@ -4,6 +4,42 @@ Serieller Monitor für Windows, macOS und Linux, funktional ähnlich dem Arduino
 Gebaut mit Go und [Wails](https://wails.io). Die App nutzt den Webbrowser-Baustein des Betriebssystems,
 deshalb sind die Pakete nur etwa 8 bis 11 MB groß.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/main-dark.png">
+  <img src="docs/screenshots/main-light.png" alt="Serial Monitor: Ausgabe eines ESP32 mit Zeitstempeln" width="800">
+</picture>
+
+## Funktionen
+
+- Portliste mit echten Namen (`COM3`, `/dev/cu.usbserial-…`, `/dev/ttyUSB0`)
+- Baudrate aus der Liste oder als eigener Wert
+- Auto-Verbinden mit dem zuletzt genutzten Port, sobald er wieder da ist
+- Kein Board-Neustart beim Verbinden; Board-Reset per Knopf (ESP32/ESP8266 über RTS, Arduino über DTR)
+- Zeitstempel, Hex-Ansicht, Autoscroll, Ausgabe als Textdatei speichern
+- Zeilenende beim Senden (keins, LF, CR, CR+LF), Senden als Hex, Verlauf mit ↑/↓
+- Oberfläche auf Deutsch und Englisch, helles und dunkles Design
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/settings-dark.png">
+        <img src="docs/screenshots/settings-light.png" alt="Einstellungen">
+      </picture>
+      <p align="center">Einstellungen</p>
+    </td>
+    <td width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/hex-dark.png">
+        <img src="docs/screenshots/hex-light.png" alt="Hex-Ansicht">
+      </picture>
+      <p align="center">Hex-Ansicht</p>
+    </td>
+  </tr>
+</table>
+
 ## Download
 
 Fertige Pakete gibt es unter **Releases**:
